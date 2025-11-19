@@ -1,9 +1,9 @@
 const cacheName = "DefaultCompany-AR-0.1";
 const contentToCache = [
     "Build/ARQuestGame.loader.js",
-    "Build/ARQuestGame.framework.js.gz",
-    "Build/ARQuestGame.data.gz",
-    "Build/ARQuestGame.wasm.gz",
+    "Build/ARQuestGame.framework.js.br",
+    "Build/ARQuestGame.data.br",
+    "Build/ARQuestGame.wasm.br",
     "TemplateData/style.css"
 
 ];
