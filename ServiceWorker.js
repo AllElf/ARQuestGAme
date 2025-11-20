@@ -1,9 +1,9 @@
 const cacheName = "DefaultCompany-AR-0.1";
 const contentToCache = [
-    "Build/ARQuestGAme.loader.js",
-    "Build/ARQuestGAme.framework.js.unityweb",
-    "Build/ARQuestGAme.data.unityweb",
-    "Build/ARQuestGAme.wasm.unityweb",
+    "Build/427bea65dee8fbd5c3cbdef25eba8de0.loader.js",
+    "Build/b5aaa07cd46efab91a046d0713896ccb.framework.js.unityweb",
+    "Build/2a9877151b3d77f333f82c2ae011993e.data.unityweb",
+    "Build/013f77905384e38504691edd8ce3f94d.wasm.unityweb",
     "TemplateData/style.css"
 
 ];
