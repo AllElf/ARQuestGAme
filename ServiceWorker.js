@@ -2,7 +2,7 @@ const cacheName = "DefaultCompany-AR-0.1";
 const contentToCache = [
     "Build/65209ab41e820a5aace87acf00825d23.loader.js",
     "Build/b5aaa07cd46efab91a046d0713896ccb.framework.js.unityweb",
-    "Build/2170db7489ecdb5209895db9ca423f22.data.unityweb",
+    "Build/ba8f9c02eb96df492fe536af936a21f9.data.unityweb",
     "Build/65f176158dd1c726d675a82493e2f8f0.wasm.unityweb",
     "TemplateData/style.css"
 
