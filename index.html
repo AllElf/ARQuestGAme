@@ -103,6 +103,9 @@
     <script src="arcamera.js" type="text/javascript"></script>
     <script src="itracker.js" type="text/javascript"></script>
     <script>
+      // Глобальный рандомный суффикс для всех ресурсов (кеш-бастер)
+      var cacheBuster = '?v=' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
+
       // Disable double-tap to zoom
       document.addEventListener('touchstart', function (event) {
         if (event.touches.length > 1) {
@@ -113,13 +116,15 @@
       document.addEventListener('gesturestart', function (event) {
         event.preventDefault();
       });
+
       var initialize = async() =>{
         var unityCanvas = document.querySelector("#unity-canvas");
         var videoCanvas = document.querySelector("#video-canvas");
         window.arCamera = new ARCamera(unityCanvas, videoCanvas);
         window.iTracker = new ImageTracker(arCamera);
         try{
-            await window.iTracker.initialize("./opencv.js");
+            // добавили cacheBuster к opencv.js
+            await window.iTracker.initialize("./opencv.js" + cacheBuster);
             console.log("ImageTracker initialized!");
         }
         catch{
@@ -132,11 +137,14 @@
         window.permissionsGranted = IsCameraPermissionGranted();
       }
       initialize();
+
       window.addEventListener("load", function () {
         if ("serviceWorker" in navigator) {
-          navigator.serviceWorker.register("ServiceWorker.js");
+          // добавили cacheBuster к ServiceWorker.js
+          navigator.serviceWorker.register("ServiceWorker.js" + cacheBuster);
         }
       });
+
       var container = document.querySelector("#unity-container");
       var canvas = document.querySelector("#unity-canvas");
       var loadingBar = document.querySelector("#unity-loading-bar");
@@ -165,32 +173,30 @@
         }
         updateBannerVisibility();
       }
+
       function StartAR() {
         var startARDiv = document.querySelector("#startARDiv");
         startARDiv.style.opacity = 0;
         setTimeout(()=>{
           startARDiv.style.visibility = "hidden";
         }, 500);
+
         var buildUrl = "Build";
-        var loaderUrl = buildUrl + "/497caffc3a4c09126920a077c37dae33.loader.js";
+        // добавляем cacheBuster ко всем ссылкам билд-файлов
+        var loaderUrl = buildUrl + "/497caffc3a4c09126920a077c37dae33.loader.js" + cacheBuster;
         var config = {
-          dataUrl: buildUrl + "/8a1719256564ff5c36a4c59e7408e5b6.data.unityweb",
-          frameworkUrl: buildUrl + "/ec0398ed312c8132024764ace5444a53.framework.js.unityweb",
-          codeUrl: buildUrl + "/ccb4d270e07e0cc1937586c00b475f3c.wasm.unityweb",
+          dataUrl: buildUrl + "/8a1719256564ff5c36a4c59e7408e5b6.data.unityweb" + cacheBuster,
+          frameworkUrl: buildUrl + "/ec0398ed312c8132024764ace5444a53.framework.js.unityweb" + cacheBuster,
+          codeUrl: buildUrl + "/ccb4d270e07e0cc1937586c00b475f3c.wasm.unityweb" + cacheBuster,
           streamingAssetsUrl: "StreamingAssets",
           companyName: "DefaultCompany",
           productName: "AR",
           productVersion: "0.1",
           showBanner: unityShowBanner,
         };
-        // By default Unity keeps WebGL canvas render target size matched with
-        // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-        // Set this to false if you want to decouple this synchronization from
-        // happening inside the engine, and you would instead like to size up
-        // the canvas DOM size and WebGL render target sizes yourself.
+
         // config.matchWebGLToCanvasSize = false;
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-          // Mobile device style: fill the whole browser client area with the game canvas:
           var meta = document.createElement('meta');
           meta.name = 'viewport';
           meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
@@ -215,8 +221,9 @@
         };
         document.body.appendChild(script);
       }
+
       //Set Facing Mode here ('environment', 'user', '')
-		window.unityFacingMode = "environment"
+		  window.unityFacingMode = "environment"
       window.WEBCAM_SETTINGS = {
           video: {
               facingMode: unityFacingMode,
@@ -248,9 +255,8 @@
           console.log("StartWebcam")
           window.webcamStream = await navigator.mediaDevices.getUserMedia(window.WEBCAM_SETTINGS);
           while (window.requestingForPermissions) {
-              // Wait until requestingForPermissions becomes true.
               console.log("Waiting for permissions...");
-              await new Promise(resolve => setTimeout(resolve, 100)); // Adjust the delay time as needed.
+              await new Promise(resolve => setTimeout(resolve, 100));
           }
           console.log("Got Permissions");
           if(window.webcamStream)
@@ -262,7 +268,6 @@
                   console.log("Webcam started successfully");
                   window.unityInstance.SendMessage('ARCamera', 'OnStartWebcamSuccess');
                  
-                  //replace background transparency
                   const canvas = document.querySelector("#unity-canvas");
                   let bgColor = window.getComputedStyle(canvas).backgroundColor;
                   canvas.style.background = bgColor.replace("rgb", "rgba").replace(")", ", 0)");
@@ -280,32 +285,25 @@
       }
       async function LoadWebcams(){
           let camDevices = [];
-          // let backCams = [];
           let devices = await navigator.mediaDevices.enumerateDevices();
           var ctr = 0;
           devices.forEach(mediaDevice => {
               if (mediaDevice.kind === 'videoinput') {
                   if(window.unityFacingMode == 'environment' && !mediaDevice.label.includes('facing front')){
-                      //back cam only
                       camDevices.push(mediaDevice);
                   }
                   else if(window.unityFacingMode == 'user' && mediaDevice.label.includes('facing front')){
-                      //front cam only
                       camDevices.push(mediaDevice);
                   }
                   else{
-                      //back and front
                       camDevices.push(mediaDevice);
                   }   
-                  
                   ctr++;
               }
           });
           var select = document.getElementById("chooseCamSel");
           select.style.visibility = "visible";
           var count = 0;
-          //reverse array because some Android phones can't distinguish front and back cams at first load
-          //and when this happens, most of the time, front cam goes first and back cam goes last
           camDevices = camDevices.reverse();
           camDevices.forEach(mediaDevice => {
               const option = document.createElement('option');
@@ -325,7 +323,6 @@
           var select = document.getElementById("chooseCamSel");
           window.deviceId = select.value;
           window.WEBCAM_SETTINGS.video['deviceId'] = deviceId;
-          //console.log(window.WEBCAM_SETTINGS);
           iTracker.WEBCAM_NAME = select.options[select.selectedIndex].innerHTML;
       }
       async function FlipCam(){
@@ -350,17 +347,16 @@
               return false;
           }
           try {
-              // Query the status of the camera permission
               const permissionStatus = await navigator.permissions.query({ name: "camera" });
               if (permissionStatus.state === "granted") {
-              console.log("Camera permission has already been granted.");
-              return true;
+                console.log("Camera permission has already been granted.");
+                return true;
               } else if (permissionStatus.state === "prompt") {
-              console.log("Camera permission is promptable.");
-              return false;
+                console.log("Camera permission is promptable.");
+                return false;
               } else {
-              console.log("Camera permission has been denied.");
-              return false;
+                console.log("Camera permission has been denied.");
+                return false;
               }
           } catch (error) {
               console.log("Error checking camera permission:", error);
@@ -403,7 +399,6 @@
           }, 500);
       }
       window.ITRACKER_GLOBALS = {
-          //place global settings here
           INTERNAL_SMOOTHFACTOR_POS: .075,
       }
     </script>
