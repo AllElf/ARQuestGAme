@@ -105,7 +105,6 @@
     <script>
       // Глобальный рандомный суффикс для всех ресурсов (кеш-бастер)
       var cacheBuster = '?v=' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
-
       // Disable double-tap to zoom
       document.addEventListener('touchstart', function (event) {
         if (event.touches.length > 1) {
@@ -116,7 +115,6 @@
       document.addEventListener('gesturestart', function (event) {
         event.preventDefault();
       });
-
       var initialize = async() =>{
         var unityCanvas = document.querySelector("#unity-canvas");
         var videoCanvas = document.querySelector("#video-canvas");
@@ -137,14 +135,12 @@
         window.permissionsGranted = IsCameraPermissionGranted();
       }
       initialize();
-
       window.addEventListener("load", function () {
         if ("serviceWorker" in navigator) {
           // добавили cacheBuster к ServiceWorker.js
           navigator.serviceWorker.register("ServiceWorker.js" + cacheBuster);
         }
       });
-
       var container = document.querySelector("#unity-container");
       var canvas = document.querySelector("#unity-canvas");
       var loadingBar = document.querySelector("#unity-loading-bar");
@@ -173,14 +169,12 @@
         }
         updateBannerVisibility();
       }
-
       function StartAR() {
         var startARDiv = document.querySelector("#startARDiv");
         startARDiv.style.opacity = 0;
         setTimeout(()=>{
           startARDiv.style.visibility = "hidden";
         }, 500);
-
         var buildUrl = "Build";
         // добавляем cacheBuster ко всем ссылкам билд-файлов
         var loaderUrl = buildUrl + "/497caffc3a4c09126920a077c37dae33.loader.js" + cacheBuster;
@@ -194,7 +188,6 @@
           productVersion: "0.1",
           showBanner: unityShowBanner,
         };
-
         // config.matchWebGLToCanvasSize = false;
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
           var meta = document.createElement('meta');
@@ -221,9 +214,8 @@
         };
         document.body.appendChild(script);
       }
-
       //Set Facing Mode here ('environment', 'user', '')
-		  window.unityFacingMode = "environment"
+		window.unityFacingMode = "environment"
       window.WEBCAM_SETTINGS = {
           video: {
               facingMode: unityFacingMode,
